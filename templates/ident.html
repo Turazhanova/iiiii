@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ident</title>
+</head>
+<body>
+    <h1>Upload a File</h1>
+    <form id="uploadForm">
+        <input type="file" id="fileInput" name="file">
+        <button type="submit">Upload</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => displayResults(data))
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = 'Error uploading file. Please try again.';
+            });
+        });
+
+        function displayResults(data) {
+            const resultDiv = document.getElementById('result');
+            if (data.error) {
+                resultDiv.innerText = data.error;
+            } else {
+                resultDiv.innerHTML = `
+                    <p>Document Type: ${data.document_type}</p>
+                    <p>Issue Date: ${data.issue_date}</p>
+                    <p>Expiry Date: ${data.expiry_date}</p>
+                    <p>INN: ${data.INN}</p>
+                    <p>ID Number: ${data.ID_number}</p>
+                    <p>Surname: ${data.surname}</p>
+                    <p>Name: ${data.name}</p>
+                    <p>Patronymic: ${data.patronymic}</p>
+                    <p>Extracted Text: ${data.extracted_text.split('\n').join('<br>')}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
