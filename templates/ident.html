@@ -57,7 +57,6 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             max-width: 600px;
-            overflow-x: auto;
         }
 
         table {
@@ -67,12 +66,12 @@
 
         th, td {
             padding: 10px;
-            border: 1px solid #ddd;
             text-align: left;
+            border-bottom: 1px solid #ddd;
         }
 
         th {
-            background-color: #f4f4f9;
+            background-color: #f2f2f2;
         }
     </style>
 </head>
@@ -105,49 +104,46 @@
 
                 const result = await response.json();
                 console.log(result);
-
-                if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object' && result[0] !== null) {
-                    displayResponseAsTable(result);
-                } else {
-                    document.getElementById('response').textContent = 'Unexpected response format';
-                }
+                displayTable(result);
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('response').textContent = `Error: ${error.message}`;
             }
         };
 
-        function displayResponseAsTable(data) {
-            const responseDiv = document.getElementById('response');
-            responseDiv.innerHTML = ''; // Clear previous content
+        function displayTable(data) {
+            if (typeof data !== 'object') {
+                document.getElementById('response').textContent = 'Invalid response format';
+                return;
+            }
 
             const table = document.createElement('table');
-
-            // Create table headers
-            const headers = Object.keys(data[0]);
             const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+
+            // Create table header
             const headerRow = document.createElement('tr');
-            headers.forEach(header => {
+            Object.keys(data).forEach(key => {
                 const th = document.createElement('th');
-                th.textContent = header;
+                th.textContent = key;
                 headerRow.appendChild(th);
             });
             thead.appendChild(headerRow);
-            table.appendChild(thead);
 
             // Create table body
-            const tbody = document.createElement('tbody');
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                headers.forEach(header => {
-                    const td = document.createElement('td');
-                    td.textContent = item[header];
-                    row.appendChild(td);
-                });
-                tbody.appendChild(row);
+            const bodyRow = document.createElement('tr');
+            Object.values(data).forEach(value => {
+                const td = document.createElement('td');
+                td.textContent = value;
+                bodyRow.appendChild(td);
             });
+            tbody.appendChild(bodyRow);
+
+            table.appendChild(thead);
             table.appendChild(tbody);
 
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '';
             responseDiv.appendChild(table);
         }
     </script>
