@@ -57,7 +57,22 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             max-width: 600px;
-            white-space: pre-wrap; /* Preserve formatting */
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f9;
         }
     </style>
 </head>
@@ -90,12 +105,46 @@
 
                 const result = await response.json();
                 console.log(result);
-                document.getElementById('response').textContent = JSON.stringify(result, null, 2);
+                displayResponseAsTable(result);
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('response').textContent = `Error: ${error.message}`;
             }
         };
+
+        function displayResponseAsTable(data) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = ''; // Clear previous content
+
+            const table = document.createElement('table');
+
+            // Create table headers
+            const headers = Object.keys(data[0]);
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.textContent = item[header];
+                    row.appendChild(td);
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            responseDiv.appendChild(table);
+        }
     </script>
 </body>
 </html>
