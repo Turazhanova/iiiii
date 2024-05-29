@@ -119,7 +119,6 @@ def upload_file():
                 extracted_text = extracted_text.replace('\n', ' ').replace('\r', '').strip()
 
                 response = OrderedDict([
-                    ("extracted_text", extracted_text),
                     ("document_type", document_type),
                     ("issue_date", issue_date),
                     ("expiry_date", expiry_date),
