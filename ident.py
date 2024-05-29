@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import re
 import os
 from flask import Flask, request, jsonify, render_template
+import logging
 
 app = Flask(__name__)
 
@@ -94,47 +95,66 @@ def detect_document_type(text):
     keywords = ["ЖЕКЕ", "КУӘЛІК", "УДОСТОВЕРЕНИЕ", "ЛИЧНОСТИ"]
     for keyword in keywords:
         if keyword in text.upper():
-            return "тип документа: УДОСТОВЕРЕНИЕ ЛИЧНОСТИ"
-    return "тип документа: Неизвестно"
+            return " УДОСТОВЕРЕНИЕ ЛИЧНОСТИ"
+    return " Неизвестно"
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
+        app.logger.error("No file part in the request")
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
     if file.filename == '':
+        app.logger.error("No selected file")
         return jsonify({"error": "No selected file"}), 400
     if file:
         file_path = os.path.join("/tmp", file.filename)
         file.save(file_path)
-        extracted_text = process_pdf_file(file_path)
-        dates, numbers = extract_dates_numbers(extracted_text)
-        inn, id_number = classify_numbers(numbers)
-        surname, name, patronymic = extract_names(extracted_text)
-        document_type = detect_document_type(extracted_text)
-        if len(dates) >= 2 and inn and id_number:
-            issue_date = dates[0] if len(dates) > 0 else None
-            expiry_date = dates[1] if len(dates) > 1 else None
-            response = {
-                "extracted_text": extracted_text,
-                "document_type": document_type,
-                "issue_date": issue_date,
-                "expiry_date": expiry_date,
-                "INN": inn,
-                "ID_number": id_number,
-                "surname": surname,
-                "name": name,
-                "patronymic": patronymic
-            }
-        else:
-            response = {"error": "Пожалуйста, загрузите изображение в хорошем качестве."}
-        os.remove(file_path)
-        return jsonify(response), 200
+        try:
+            extracted_text = process_pdf_file(file_path)
+            dates, numbers = extract_dates_numbers(extracted_text)
+            inn, id_number = classify_numbers(numbers)
+            surname, name, patronymic = extract_names(extracted_text)
+            document_type = detect_document_type(extracted_text)
+            if len(dates) >= 2 and inn and id_number:
+                issue_date = dates[0] if len(dates) > 0 else None
+                expiry_date = dates[1] if len(dates) > 1 else None
+                response = {
+                    "extracted_text": extracted_text,
+                    "document_type": document_type,
+                    "issue_date": issue_date,
+                    "expiry_date": expiry_date,
+                    "INN": inn,
+                    "ID_number": id_number,
+                    "surname": surname,
+                    "name": name,
+                    "patronymic": patronymic
+                }
+            else:
+                response = {"error": "Please upload a high-quality image."}
+            os.remove(file_path)
+            return jsonify(response), 200
+        except Exception as e:
+            app.logger.error(f"Error processing file: {e}")
+            return jsonify({"error": str(e)}), 500
     return jsonify({"error": "Unexpected error"}), 500
+
 
 @app.route('/')
 def index():
     return render_template('ident.html')
+
+@app.errorhandler(500)
+def internal_error(error):
+    app.logger.error(f"Server Error: {error}")
+    return jsonify({"error": "Internal Server Error"}), 500
+
+@app.errorhandler(Exception)
+def unhandled_exception(e):
+    app.logger.error(f"Unhandled Exception: {e}")
+    return jsonify({"error": str(e)}), 500
+
+# Your existing routes and functions
 
 if __name__ == '__main__':
     app.run(debug=True)
