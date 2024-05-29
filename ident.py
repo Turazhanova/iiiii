@@ -70,8 +70,8 @@ def classify_numbers(numbers):
     return inn, id_number
 
 def extract_names(text):
-    surname_pattern = re.compile(r'\b\w+(ова|ева|ево|ово|ев|ов)\b', re.IGNORECASE)
-    patronymic_pattern = re.compile(r'\b\w+(қызы|ұлы|овна|овно|евно|евна|вич|улы|кызы|)\b', re.IGNORECASE)
+    surname_pattern = re.compile(r'\b\w+(ова|ева|ево|ово|ЕВ|ов)\b', re.IGNORECASE)
+    patronymic_pattern = re.compile(r'\b\w+(қызы|ұлы|овна|овно|евно|евна|вич|УЛЫ|кызы|)\b', re.IGNORECASE)
     surname_match = surname_pattern.search(text)
     patronymic_match = patronymic_pattern.search(text)
     surname = surname_match.group() if surname_match else None
