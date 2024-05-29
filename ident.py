@@ -122,7 +122,6 @@ def upload_file():
                 issue_date = dates[0] if len(dates) > 0 else None
                 expiry_date = dates[1] if len(dates) > 1 else None
                 response = {
-                    "extracted_text": extracted_text,
                     "document_type": document_type,
                     "issue_date": issue_date,
                     "expiry_date": expiry_date,
