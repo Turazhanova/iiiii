@@ -43,7 +43,7 @@ def process_pdf_file(file_path):
             page_text = extract_text(preprocessed_img)
             extracted_text += page_text
         pdf_document.close()
-    elif file_path.lower().endswith(('.jpeg', '.jpg', '.png', '.bmp','.pdf')):
+    elif file_path.lower().endswith(('.jpeg', '.jpg', '.png', '.bmp')):
         img = cv2.imread(file_path)
         preprocessed_img = preprocess_image(img)
         extracted_text = extract_text(preprocessed_img)
@@ -70,19 +70,20 @@ def classify_numbers(numbers):
     return inn, id_number
 
 def extract_names(text):
-    surname_pattern = re.compile(r'\b\w+(ова|ева|ево|ово|ев|ов)\b', re.IGNORECASE)
-    patronymic_pattern = re.compile(r'\b\w+(қызы|ұлы|овна|овно|евно|евна|УЛЫ|КЫЗЫ)\b', re.IGNORECASE)
+    surname_pattern = re.compile(r'\b\w+(ова|ева|ево|ово)\b', re.IGNORECASE)
+    patronymic_pattern = re.compile(r'\b\w+(қызы|ұлы|овна|овно|евно|евна)\b', re.IGNORECASE)
     surname_match = surname_pattern.search(text)
     patronymic_match = patronymic_pattern.search(text)
     surname = surname_match.group() if surname_match else None
     patronymic = patronymic_match.group() if patronymic_match else None
     name = None
     if surname:
-        # Найти индекс фамилии и взять два слова после нее, игнорируя символы
+        name_pattern = re.compile(r'\b[А-ЯЁ][а-яё]+\b', re.IGNORECASE)
+        name_candidates = name_pattern.findall(text)
         surname_index = text.find(surname)
-        words_after_surname = re.findall(r'\b[А-ЯЁа-яё]+\b', text[surname_index:])
-        if len(words_after_surname) > 1:
-            name = words_after_surname[1]  # Берем второе слово после фамилии
+        surname_words = text[surname_index:].split()
+        if len(surname_words) > 2:
+            name = ' '.join(surname_words[1:3])
     return surname, name, patronymic
 
 def detect_document_type(text):
