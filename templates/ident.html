@@ -105,7 +105,12 @@
 
                 const result = await response.json();
                 console.log(result);
-                displayResponseAsTable(result);
+
+                if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object') {
+                    displayResponseAsTable(result);
+                } else {
+                    document.getElementById('response').textContent = 'Unexpected response format';
+                }
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('response').textContent = `Error: ${error.message}`;
