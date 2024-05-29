@@ -8,6 +8,8 @@ import re
 import os
 from flask import Flask, request, jsonify, render_template
 import logging
+import os
+
 
 app = Flask(__name__)
 
@@ -156,5 +158,7 @@ def unhandled_exception(e):
 
 # Your existing routes and functions
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
