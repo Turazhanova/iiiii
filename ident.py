@@ -71,7 +71,7 @@ def classify_numbers(numbers):
 
 def extract_names(text):
     surname_pattern = re.compile(r'\b\w+(ОВА|ЕВА|ЕВО|ОВО|ЕВ|ОВ)\b', re.IGNORECASE)
-    patronymic_pattern = re.compile(r'\b\w+(ҚЫЗЫ|ҰЛЫ|ОВНА|овно|евно|евна|ВИЧ|УЛЫ|кызы|)\b', re.IGNORECASE)
+    patronymic_pattern = re.compile(r'\b\w+(ҚЫЗЫ|ҰЛЫ|ОВНА|ОВНО|ЕВНО|ЕВНА|ВИЧ|УЛЫ|КЫЗЫ|ВАНА)\b', re.IGNORECASE)
     surname_match = surname_pattern.search(text)
     patronymic_match = patronymic_pattern.search(text)
     surname = surname_match.group() if surname_match else None
