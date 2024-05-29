@@ -43,7 +43,7 @@ def process_pdf_file(file_path):
             page_text = extract_text(preprocessed_img)
             extracted_text += page_text
         pdf_document.close()
-    elif file_path.lower().endswith(('.jpeg', '.jpg', '.png', '.bmp','pdf')):
+    elif file_path.lower().endswith(('.jpeg', '.jpg', '.png', '.bmp','.pdf')):
         img = cv2.imread(file_path)
         preprocessed_img = preprocess_image(img)
         extracted_text = extract_text(preprocessed_img)
@@ -90,8 +90,8 @@ def detect_document_type(text):
     keywords = ["ЖЕКЕ", "КУӘЛІК", "УДОСТОВЕРЕНИЕ", "ЛИЧНОСТИ"]
     for keyword in keywords:
         if keyword in text.upper():
-            return " УДОСТОВЕРЕНИЕ ЛИЧНОСТИ"
-    return " Неизвестно"
+            return "УДОСТОВЕРЕНИЕ ЛИЧНОСТИ"
+    return "Неизвестно"
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -115,7 +115,7 @@ def upload_file():
                 issue_date = dates[0] if len(dates) > 0 else None
                 expiry_date = dates[1] if len(dates) > 1 else None
                 
-                # Очистка извлеченного текста
+                # Clean the extracted text
                 extracted_text = extracted_text.replace('\n', ' ').replace('\r', '').strip()
 
                 response = OrderedDict([
