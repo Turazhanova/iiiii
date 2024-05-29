@@ -106,7 +106,7 @@
                 const result = await response.json();
                 console.log(result);
 
-                if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object') {
+                if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object' && result[0] !== null) {
                     displayResponseAsTable(result);
                 } else {
                     document.getElementById('response').textContent = 'Unexpected response format';
