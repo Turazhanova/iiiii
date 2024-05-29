@@ -50,7 +50,7 @@ def process_pdf_file(file_path):
             page_text = extract_text(preprocessed_img)
             extracted_text += page_text
         pdf_document.close()
-    elif file_path.lower().endswith(('.jpeg', '.jpg', '.png', '.bmp')):
+    elif file_path.lower().endswith(('.jpeg', '.jpg', '.png', '.bmp','.pdf')):
         img = cv2.imread(file_path)
         preprocessed_img = preprocess_image(img)
         extracted_text = extract_text(preprocessed_img)
