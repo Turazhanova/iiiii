@@ -112,39 +112,73 @@
         };
 
         function displayTable(data) {
-            if (typeof data !== 'object') {
-                document.getElementById('response').textContent = 'Invalid response format';
-                return;
-            }
-
-            const table = document.createElement('table');
-            const thead = document.createElement('thead');
-            const tbody = document.createElement('tbody');
-
-            // Create table header
-            const headerRow = document.createElement('tr');
-            Object.keys(data).forEach(key => {
-                const th = document.createElement('th');
-                th.textContent = key;
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
-
-            // Create table body
-            const bodyRow = document.createElement('tr');
-            Object.values(data).forEach(value => {
-                const td = document.createElement('td');
-                td.textContent = value;
-                bodyRow.appendChild(td);
-            });
-            tbody.appendChild(bodyRow);
-
-            table.appendChild(thead);
-            table.appendChild(tbody);
-
             const responseDiv = document.getElementById('response');
             responseDiv.innerHTML = '';
-            responseDiv.appendChild(table);
+
+            if (Array.isArray(data)) {
+                if (data.length === 0) {
+                    responseDiv.textContent = 'No data available';
+                    return;
+                }
+
+                const table = document.createElement('table');
+                const thead = document.createElement('thead');
+                const tbody = document.createElement('tbody');
+
+                // Create table header
+                const headerRow = document.createElement('tr');
+                Object.keys(data[0]).forEach(key => {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+
+                // Create table body
+                data.forEach(item => {
+                    const bodyRow = document.createElement('tr');
+                    Object.values(item).forEach(value => {
+                        const td = document.createElement('td');
+                        td.textContent = value;
+                        bodyRow.appendChild(td);
+                    });
+                    tbody.appendChild(bodyRow);
+                });
+
+                table.appendChild(thead);
+                table.appendChild(tbody);
+                responseDiv.appendChild(table);
+
+            } else if (typeof data === 'object' && data !== null) {
+                const table = document.createElement('table');
+                const thead = document.createElement('thead');
+                const tbody = document.createElement('tbody');
+
+                // Create table header
+                const headerRow = document.createElement('tr');
+                Object.keys(data).forEach(key => {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+
+                // Create table body
+                const bodyRow = document.createElement('tr');
+                Object.values(data).forEach(value => {
+                    const td = document.createElement('td');
+                    td.textContent = value;
+                    bodyRow.appendChild(td);
+                });
+                tbody.appendChild(bodyRow);
+
+                table.appendChild(thead);
+                table.appendChild(tbody);
+                responseDiv.appendChild(table);
+
+            } else {
+                responseDiv.textContent = 'Unexpected response format';
+            }
         }
     </script>
 </body>
