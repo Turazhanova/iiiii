@@ -120,7 +120,7 @@ def upload_file():
 
                 response = OrderedDict([
                     ("document_type", document_type),
-                    ("issue_date", issue_date),
+                    ("date of birth", issue_date),
                     ("expiry_date", expiry_date),
                     ("INN", inn),
                     ("ID_number", id_number),
