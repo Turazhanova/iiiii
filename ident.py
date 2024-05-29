@@ -6,6 +6,7 @@ import numpy as np
 import re
 import os
 from flask import Flask, request, jsonify, render_template
+from collections import OrderedDict
 import logging
 
 app = Flask(__name__)
@@ -42,7 +43,7 @@ def process_pdf_file(file_path):
             page_text = extract_text(preprocessed_img)
             extracted_text += page_text
         pdf_document.close()
-    elif file_path.lower().endswith(('.jpeg', '.jpg', '.png', '.bmp','.pdf')):
+    elif file_path.lower().endswith(('.jpeg', '.jpg', '.png', '.bmp')):
         img = cv2.imread(file_path)
         preprocessed_img = preprocess_image(img)
         extracted_text = extract_text(preprocessed_img)
@@ -117,17 +118,17 @@ def upload_file():
                 # Очистка извлеченного текста
                 extracted_text = extracted_text.replace('\n', ' ').replace('\r', '').strip()
 
-                response = {
-                    "extracted_text": extracted_text,
-                    "document_type": document_type,
-                    "issue_date": issue_date,
-                    "expiry_date": expiry_date,
-                    "INN": inn,
-                    "ID_number": id_number,
-                    "surname": surname,
-                    "name": name,
-                    "patronymic": patronymic
-                }
+                response = OrderedDict([
+                    ("extracted_text", extracted_text),
+                    ("document_type", document_type),
+                    ("issue_date", issue_date),
+                    ("expiry_date", expiry_date),
+                    ("INN", inn),
+                    ("ID_number", id_number),
+                    ("surname", surname),
+                    ("name", name),
+                    ("patronymic", patronymic)
+                ])
             else:
                 response = {"error": "Please upload a high-quality image."}
             os.remove(file_path)
