@@ -3,13 +3,10 @@ import pytesseract
 from PIL import Image
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 import re
 import os
 from flask import Flask, request, jsonify, render_template
 import logging
-import os
-
 
 app = Flask(__name__)
 
@@ -26,11 +23,6 @@ def preprocess_image(image):
     new_width = int(width * 1.5)
     resized_img = cv2.resize(processed_img, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
     return resized_img
-
-def display_image(img):
-    plt.imshow(img, cmap='gray')
-    plt.axis('off')
-    plt.show()
 
 def extract_text(image):
     config = '--psm 6'  # Assume a single uniform block of text
@@ -121,7 +113,12 @@ def upload_file():
             if len(dates) >= 2 and inn and id_number:
                 issue_date = dates[0] if len(dates) > 0 else None
                 expiry_date = dates[1] if len(dates) > 1 else None
+                
+                # Очистка извлеченного текста
+                extracted_text = extracted_text.replace('\n', ' ').replace('\r', '').strip()
+
                 response = {
+                    "extracted_text": extracted_text,
                     "document_type": document_type,
                     "issue_date": issue_date,
                     "expiry_date": expiry_date,
@@ -140,7 +137,6 @@ def upload_file():
             return jsonify({"error": str(e)}), 500
     return jsonify({"error": "Unexpected error"}), 500
 
-
 @app.route('/')
 def index():
     return render_template('ident.html')
@@ -154,9 +150,6 @@ def internal_error(error):
 def unhandled_exception(e):
     app.logger.error(f"Unhandled Exception: {e}")
     return jsonify({"error": str(e)}), 500
-
-# Your existing routes and functions
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
